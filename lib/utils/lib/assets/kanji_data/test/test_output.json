@@ -1,0 +1,37 @@
+[
+  {
+    "kanji": "人",
+    "meaning": "person",
+    "onyomi": [
+      "ジン",
+      "ニン"
+    ],
+    "kunyomi": [
+      "ひと"
+    ]
+  },
+  {
+    "kanji": "一",
+    "meaning": "one",
+    "onyomi": [
+      "イチ",
+      "イツ"
+    ],
+    "kunyomi": [
+      "ひと.つ",
+      "ひと-"
+    ]
+  },
+  {
+    "kanji": "日",
+    "meaning": "sun; day",
+    "onyomi": [
+      "ニチ",
+      "ジツ"
+    ],
+    "kunyomi": [
+      "ひ",
+      "か"
+    ]
+  }
+]
