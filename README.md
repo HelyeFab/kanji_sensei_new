@@ -183,3 +183,110 @@ Create a Kanji study app tailored for individual learners at beginner, intermedi
 ### Phase 6: Testing & Monitoring 🔄
 - Implement comprehensive automated tests
 - Integrate Firebase Analytics and Crashlytics
+
+## Firebase Integration Work Plan (from Keyra)
+
+This work plan outlines the steps to integrate Firebase features from the Keyra app into the kanji_sensei app.
+
+### 1. Authentication Implementation
+
+#### Step 1: Set up Authentication Service
+- Create an auth service similar to Keyra's `AuthService` in `lib/core/auth/auth_service.dart`
+- Implement email/password authentication, sign-in, sign-up, sign-out, and password reset
+
+#### Step 2: Create Authentication UI
+- Implement login/register screen with tab controller similar to Keyra's `AuthPage`
+- Create login form with email, password fields, and forgot password functionality
+- Create register form with name, email, and password fields
+- Add social sign-in buttons (Google, Apple) if needed
+
+#### Step 3: Implement Authentication BLoC
+- Create auth bloc with events and states for authentication flow
+- Implement authentication state listening for automatic sign-in
+- Handle authentication errors and display appropriate messages
+
+### 2. User Profile Implementation
+
+#### Step 1: Create Profile Screen
+- Implement profile screen similar to Keyra's `ProfilePage`
+- Display user information (name, email, profile picture)
+- Add settings section for theme, notifications, and language
+- Add information section for app version, acknowledgments, etc.
+
+#### Step 2: User Stats Repository
+- Create a repository for tracking user statistics
+- Implement methods for getting, updating, and streaming user stats
+- Track saved words count, streaks, and other relevant metrics
+
+#### Step 3: User Stats Model
+- Create a model for user statistics similar to Keyra's `UserStats`
+- Include fields for saved words, streaks, and other metrics
+- Implement methods for checking if streak is active
+
+### 3. Word Collection Implementation
+
+#### Step 1: Create Saved Words Repository
+- Implement a repository similar to Keyra's `SavedWordsRepository`
+- Add methods for saving, removing, updating, and retrieving words
+- Implement Firebase Firestore integration for storing words
+
+#### Step 2: Create Saved Word Model
+- Create a model for saved words similar to Keyra's `SavedWord`
+- Include fields for word, definition, examples, progress, etc.
+- Implement methods for converting to/from Firestore
+
+#### Step 3: Create Word Collection UI
+- Implement UI for displaying saved words
+- Add functionality for adding words to collection
+- Create UI for organizing words into categories or decks
+
+### 4. Flashcard Implementation
+
+#### Step 1: Create Flashcard Widget
+- Implement a flashcard widget similar to Keyra's `Flashcard`
+- Add front and back card designs
+- Include functionality for displaying kanji information
+
+#### Step 2: Create Study Session
+- Implement study session page similar to Keyra's `StudySessionPage`
+- Add functionality for flipping cards and marking difficulty
+- Implement spaced repetition algorithm for scheduling reviews
+
+#### Step 3: Create Study Progress Tracking
+- Implement progress tracking for study sessions
+- Add UI for displaying progress statistics
+- Create functionality for tracking streaks and achievements
+
+### 5. Authentication Flow and Navigation
+
+#### Step 1: Implement Authentication Flow
+- Create navigation logic to restrict app access to authenticated users
+- Redirect unauthenticated users to login/register screen
+- Implement automatic sign-in for returning users
+
+#### Step 2: Create Main Navigation
+- Implement main navigation with bottom navigation bar
+- Add routes for kanji search, dictionary, study, and profile screens
+- Implement navigation guards based on authentication state
+
+### 6. Integration and Testing
+
+#### Step 1: Integrate All Components
+- Connect authentication, profile, word collection, and flashcard features
+- Ensure data flows correctly between components
+- Implement proper error handling and loading states
+
+#### Step 2: Test Authentication Flow
+- Test sign-up, sign-in, and sign-out functionality
+- Verify password reset works correctly
+- Test social sign-in if implemented
+
+#### Step 3: Test Word Collection and Flashcards
+- Test saving, updating, and removing words
+- Verify flashcard functionality works correctly
+- Test spaced repetition algorithm for scheduling reviews
+
+#### Step 4: Test User Stats and Streaks
+- Verify user stats are updated correctly
+- Test streak calculation and tracking
+- Ensure profile page displays correct information

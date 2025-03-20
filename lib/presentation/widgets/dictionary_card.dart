@@ -42,22 +42,6 @@ class DictionaryCard extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.tagBackground,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    partOfSpeech,
-                    style: const TextStyle(
-                      color: AppColors.tagText,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 8),

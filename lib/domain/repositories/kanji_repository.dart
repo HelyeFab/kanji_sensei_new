@@ -19,4 +19,7 @@ abstract class KanjiRepository {
   Future<Either<Exception, void>> cacheJlptLevelKanji(int jlptLevel, List<Kanji> kanjiList);
   Future<Either<Exception, List<Kanji>?>> getCachedJlptLevelKanji(int jlptLevel);
   Future<Either<Exception, bool>> hasCompleteJlptLevelCache(int jlptLevel);
+
+  // New method for dictionary word search
+  Future<Either<Exception, List<Map<String, dynamic>>>> searchDictionaryWords(String query);
 }

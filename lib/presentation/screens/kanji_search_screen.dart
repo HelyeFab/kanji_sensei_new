@@ -242,22 +242,6 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                                 color: AppColors.textPrimary,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppColors.tagBackground,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Text(
-                                'noun',
-                                style: TextStyle(
-                                  color: AppColors.tagText,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -383,22 +367,6 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppColors.tagBackground,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Text(
-                                'noun',
-                                style: TextStyle(
-                                  color: AppColors.tagText,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
                               ),
                             ),
                           ],

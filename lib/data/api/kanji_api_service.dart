@@ -692,4 +692,58 @@ class KanjiApiService {
       return searchKanjiByJlptLevel(jlptLevel, limit: 0);
     }
   }
+
+    Future<List<Map<String, dynamic>>> searchWords(String query) async {
+    try {
+      final response = await _jishoDio.get('search/words', queryParameters: {'keyword': query});
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to fetch data from Jisho API: ${response.statusCode}');
+      }
+
+      final List<dynamic> data = response.data['data'] ?? [];
+      final List<Map<String, dynamic>> results = [];
+
+      for (var item in data) {
+        final List<dynamic> japanese = item['japanese'] ?? [];
+        if (japanese.isNotEmpty) {
+          final String word = japanese[0]['word'] ?? japanese[0]['reading'] ?? '';
+          final String reading = japanese[0]['reading'] ?? '';
+
+          final List<dynamic> senses = item['senses'] ?? [];
+          if (senses.isNotEmpty) {
+            final String partOfSpeech = senses[0]['parts_of_speech']?.join(', ') ?? '';
+            final String translation = senses[0]['english_definitions']?.join(', ') ?? '';
+            final List<String> examples = [];
+
+            for (var sense in senses) {
+              final List<dynamic> restrictions = sense['restrictions'] ?? [];
+              if(restrictions.isNotEmpty) continue; // Skip this sense if it has restrictions
+              
+              final List<dynamic> seeAlso = sense['see_also'] ?? [];
+              if(seeAlso.isNotEmpty) continue;
+
+              final List<dynamic> sentences = sense['sentences'] ?? [];
+              for(var sentence in sentences){
+                examples.add('${sentence['en']} (${sentence['ja']})');
+              }
+            }
+
+            results.add({
+              'word': word,
+              'reading': reading,
+              'partOfSpeech': partOfSpeech,
+              'translation': translation,
+              'example': examples.isNotEmpty ? examples.join(' ') : '',
+            });
+          }
+        }
+      }
+
+      return results;
+    } catch (e) {
+      print('Error searching Jisho: $e');
+      throw Exception('Failed to search words: $e');
+    }
+  }
 }

@@ -112,6 +112,16 @@ class KanjiRepositoryImpl implements KanjiRepository {
   }
 
   @override
+  Future<Either<Exception, List<Map<String, dynamic>>>> searchDictionaryWords(String query) async {
+    try {
+      final results = await _apiService.searchWords(query);
+      return Right(results);
+    } catch (e) {
+      return Left(Exception('Failed to search dictionary words: $e'));
+    }
+  }
+
+  @override
   Future<Either<Exception, List<Kanji>>> searchKanjiByJlptLevel(int jlptLevel, {int limit = 20}) async {
     try {
       // Check cache first
