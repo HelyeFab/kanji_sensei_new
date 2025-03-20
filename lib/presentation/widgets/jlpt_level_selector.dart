@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
 
 class JlptLevelSelector extends StatelessWidget {
@@ -19,19 +18,28 @@ class JlptLevelSelector extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primary, width: 2),
       ),
       child: Row(
         children: List.generate(5, (index) {
           final level = 5 - index;
           final isSelected = level == selectedLevel;
+          
+          BorderRadius borderRadius;
+          if (index == 0) {
+            borderRadius = const BorderRadius.only(
+              topRight: Radius.circular(22),
+              bottomRight: Radius.circular(22),
+            );
+          } else if (index == 4) {
+            borderRadius = const BorderRadius.only(
+              topLeft: Radius.circular(22),
+              bottomLeft: Radius.circular(22),
+            );
+          } else {
+            borderRadius = BorderRadius.zero;
+          }
           
           return Expanded(
             child: GestureDetector(
@@ -39,7 +47,7 @@ class JlptLevelSelector extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  borderRadius: borderRadius,
                 ),
                 alignment: Alignment.center,
                 child: Text(

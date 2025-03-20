@@ -18,38 +18,29 @@ class KanjiSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 48,
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.lightGray, // Matcha background
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primary, width: 3),
       ),
       child: TextField(
         controller: controller,
         enabled: enabled,
-        style: AppTextStyles.bodyLarge,
+        style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textPrimary),
         decoration: InputDecoration(
-          hintText: '漢字を入力',
-          hintStyle: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.textSecondary,
+          filled: false,
+          hintText: 'Search for a word',
+          hintStyle: AppTextStyles.searchHint
+              .copyWith(color: AppColors.textPrimary),
+          prefixIcon: const Padding(
+            padding: EdgeInsets.only(left: 16.0, right: 8.0),
+            child: Icon(Icons.search, color: AppColors.textPrimary, size: 20),
           ),
-          prefixIcon: const Icon(Icons.search, color: AppColors.primary),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            color: AppColors.primary,
-            onPressed: onSearch,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: AppColors.surface,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,
