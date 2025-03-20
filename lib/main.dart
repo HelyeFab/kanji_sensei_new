@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:kanji_sensei/presentation/theme/app_colors.dart';
 import 'core/di/injection.dart';
 import 'core/constants/app_config.dart';
 import 'presentation/blocs/kanji/kanji_bloc.dart';
 import 'presentation/screens/kanji_search_screen.dart';
+import 'presentation/theme/app_theme.dart';
+import 'presentation/theme/app_colors.dart';
+
+import 'package:kanji_sensei/presentation/screens/home_screen.dart';
+import 'package:kanji_sensei/presentation/screens/study_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,37 +33,62 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _selectedIndex = 0;
+  
+  static final List<Widget> _screens = [
+    const HomeScreen(),
+    const StudyScreen(),
+    const KanjiSearchScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,  
+      debugShowCheckedModeBanner: false,
       title: AppConfig.appName,
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: BlocProvider(
-        create: (context) => getIt<KanjiBloc>(),
-        child: const KanjiSearchScreen(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: Scaffold(
+        body: BlocProvider(
+          create: (context) => getIt<KanjiBloc>(),
+          child: _screens[_selectedIndex],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: 'Study',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Search',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          backgroundColor: AppColors.surface,
+          selectedItemColor: AppColors.secondary,
+          unselectedItemColor: AppColors.textSecondary,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

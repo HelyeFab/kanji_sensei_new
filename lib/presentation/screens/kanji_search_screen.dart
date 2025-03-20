@@ -27,24 +27,24 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
     if (_searchByJlpt) {
       // Search by JLPT level - use new event for improved loading
       context.read<KanjiBloc>().add(
-        LoadInitialKanjiByJlptLevel(_selectedJlptLevel),
-      );
+            LoadInitialKanjiByJlptLevel(_selectedJlptLevel),
+          );
     } else {
       if (_searchController.text.isEmpty) return;
-      
+
       FocusScope.of(context).unfocus();
-      
+
       // Search by kanji character
       if (_searchController.text.length == 1) {
         // If it's a single character, get details for that kanji
         context.read<KanjiBloc>().add(
-          SelectKanji(_searchController.text),
-        );
+              SelectKanji(_searchController.text),
+            );
       } else {
         // Otherwise, search for kanji
         context.read<KanjiBloc>().add(
-          SearchKanji(_searchController.text),
-        );
+              SearchKanji(_searchController.text),
+            );
       }
     }
   }
@@ -165,9 +165,9 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                       return _buildPaginatedKanjiList(state);
                     } else {
                       return Center(
-                        child: Text(_searchByJlpt 
-                          ? 'Select a JLPT level and press Search' 
-                          : 'Enter a kanji to search'),
+                        child: Text(_searchByJlpt
+                            ? 'Select a JLPT level and press Search'
+                            : 'Enter a kanji to search'),
                       );
                     }
                   },
@@ -196,7 +196,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               ),
             ),
           ),
-          
+
         // Main kanji list
         Expanded(
           child: ListView.builder(
@@ -228,7 +228,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
             },
           ),
         ),
-        
+
         // Pagination controls
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
@@ -239,21 +239,25 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: state.hasPreviousPage
-                    ? () => context.read<KanjiBloc>().add(ChangePage(state.currentPage - 1))
+                    ? () => context
+                        .read<KanjiBloc>()
+                        .add(ChangePage(state.currentPage - 1))
                     : null,
               ),
-              
+
               // Page indicator
               Text(
                 'Page ${state.currentPage + 1} of ${state.availablePages}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              
+
               // Next page button
               IconButton(
                 icon: const Icon(Icons.arrow_forward),
                 onPressed: state.hasNextPage
-                    ? () => context.read<KanjiBloc>().add(ChangePage(state.currentPage + 1))
+                    ? () => context
+                        .read<KanjiBloc>()
+                        .add(ChangePage(state.currentPage + 1))
                     : null,
               ),
             ],
@@ -262,7 +266,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
       ],
     );
   }
-  
+
   // Widget for showing kanji list with background loading indicator
   Widget _buildKanjiListWithLoading(KanjiState state) {
     return Column(
@@ -287,7 +291,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
             ],
           ),
         ),
-        
+
         // Kanji list (same as in _buildPaginatedKanjiList)
         Expanded(
           child: ListView.builder(
@@ -319,7 +323,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
             },
           ),
         ),
-        
+
         // Pagination controls (same as in _buildPaginatedKanjiList)
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
@@ -329,7 +333,9 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: state.hasPreviousPage
-                    ? () => context.read<KanjiBloc>().add(ChangePage(state.currentPage - 1))
+                    ? () => context
+                        .read<KanjiBloc>()
+                        .add(ChangePage(state.currentPage - 1))
                     : null,
               ),
               Text(
@@ -339,7 +345,9 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               IconButton(
                 icon: const Icon(Icons.arrow_forward),
                 onPressed: state.hasNextPage
-                    ? () => context.read<KanjiBloc>().add(ChangePage(state.currentPage + 1))
+                    ? () => context
+                        .read<KanjiBloc>()
+                        .add(ChangePage(state.currentPage + 1))
                     : null,
               ),
             ],
