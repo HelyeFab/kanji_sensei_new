@@ -7,12 +7,14 @@ class KanjiSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSearch;
   final bool enabled;
+  final String hintText;
 
   const KanjiSearchBar({
     super.key,
     required this.controller,
     required this.onSearch,
     this.enabled = true,
+    this.hintText = 'Search for a word',
   });
 
   @override
@@ -31,7 +33,7 @@ class KanjiSearchBar extends StatelessWidget {
         style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textPrimary),
         decoration: InputDecoration(
           filled: false,
-          hintText: 'Search for a word',
+          hintText: hintText,
           hintStyle: AppTextStyles.searchHint
               .copyWith(color: AppColors.textPrimary),
           prefixIcon: const Padding(

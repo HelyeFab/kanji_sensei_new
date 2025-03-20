@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'firebase_options.dart';
 import 'package:kanji_sensei/presentation/theme/app_colors.dart';
 import 'core/di/injection.dart';
 import 'core/constants/app_config.dart';
@@ -16,8 +17,10 @@ import 'package:kanji_sensei/presentation/screens/study_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase - temporarily disabled for development
-  // await Firebase.initializeApp();
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize Hive for local storage
   await Hive.initFlutter();

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "93869706966",
+    "project_id": "kanji-sensei-720df",
+    "storage_bucket": "kanji-sensei-720df.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93869706966:android:66a850051b24b628208377",
+        "android_client_info": {
+          "package_name": "com.example.kanji_sensei"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5Zamp-YtG6qAHv3hN4HXWWFqdjY65ozs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

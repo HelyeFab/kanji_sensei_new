@@ -4,57 +4,53 @@ import '../theme/app_text_styles.dart';
 
 class JlptLevelSelector extends StatelessWidget {
   final int selectedLevel;
-  final ValueChanged<int> onLevelChanged;
+  final Function(int) onLevelSelected;
 
   const JlptLevelSelector({
     super.key,
     required this.selectedLevel,
-    required this.onLevelChanged,
+    required this.onLevelSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary, width: 2),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: List.generate(5, (index) {
-          final level = 5 - index;
-          final isSelected = level == selectedLevel;
+          final level = index + 1;
+          final isSelected = level == selectedLevel && selectedLevel > 0;
           
-          BorderRadius borderRadius;
-          if (index == 0) {
-            borderRadius = const BorderRadius.only(
-              topRight: Radius.circular(22),
-              bottomRight: Radius.circular(22),
-            );
-          } else if (index == 4) {
-            borderRadius = const BorderRadius.only(
-              topLeft: Radius.circular(22),
-              bottomLeft: Radius.circular(22),
-            );
-          } else {
-            borderRadius = BorderRadius.zero;
-          }
-          
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onLevelChanged(level),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: borderRadius,
+          return GestureDetector(
+            onTap: () => onLevelSelected(level),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : AppColors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.primary,
+                  width: 2,
                 ),
-                alignment: Alignment.center,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        )
+                      ]
+                    : null,
+              ),
+              child: Center(
                 child: Text(
                   'N$level',
                   style: AppTextStyles.bodyLarge.copyWith(
+                    fontWeight: FontWeight.bold,
                     color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),

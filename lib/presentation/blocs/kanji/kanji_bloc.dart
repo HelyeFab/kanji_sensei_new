@@ -101,6 +101,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       currentPage: 0,
       isAllLoaded: false,
       kanjiList: const [], // Clear previous results
+      jlptLevel: event.jlptLevel, // Store the selected JLPT level
     ));
     
     // Check if we have a complete cache first

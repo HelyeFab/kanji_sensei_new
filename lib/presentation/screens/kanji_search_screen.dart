@@ -5,7 +5,9 @@ import '../blocs/kanji/kanji_event.dart';
 import '../blocs/kanji/kanji_state.dart';
 import '../../domain/entities/kanji.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 import '../widgets/kanji_search_bar.dart';
+import '../widgets/jlpt_level_selector.dart';
 
 class KanjiSearchScreen extends StatefulWidget {
   const KanjiSearchScreen({super.key});
@@ -17,7 +19,6 @@ class KanjiSearchScreen extends StatefulWidget {
 class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _searchByJlpt = false;
-  int _selectedJlptLevel = 1;
 
   @override
   void dispose() {
@@ -27,10 +28,12 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
 
   void _performSearch() {
     if (_searchByJlpt) {
-      // Search by JLPT level - use new event for improved loading
-      context.read<KanjiBloc>().add(
-            LoadInitialKanjiByJlptLevel(_selectedJlptLevel),
-          );
+      final currentJlptLevel = context.read<KanjiBloc>().state.jlptLevel;
+      if (currentJlptLevel > 0) {
+        context.read<KanjiBloc>().add(
+          LoadInitialKanjiByJlptLevel(currentJlptLevel)
+        );
+      }
     } else {
       if (_searchController.text.isEmpty) return;
 
@@ -66,57 +69,68 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!_searchByJlpt)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: KanjiSearchBar(
-                    controller: _searchController,
-                    onSearch: _performSearch,
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: KanjiSearchBar(
+                  controller: _searchController,
+                  onSearch: () {
+                    setState(() {
+                      _searchByJlpt = false;
+                    });
+                    _performSearch();
+                  },
+                  hintText: 'Search for a kanji',
                 ),
+              ),
               const SizedBox(height: 8),
+              // Text divider
               Row(
-                children: [
-                  Checkbox(
-                    value: _searchByJlpt,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchByJlpt = value ?? false;
-                      });
-                    },
+                children: const [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text('OR', style: TextStyle(color: AppColors.textSecondary)),
                   ),
-                  const Text('Search by JLPT level'),
+                  Expanded(child: Divider()),
                 ],
               ),
-              if (_searchByJlpt)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    children: [
-                      const Text('JLPT Level: '),
-                      const SizedBox(width: 8),
-                      DropdownButton<int>(
-                        value: _selectedJlptLevel,
-                        items: [1, 2, 3, 4, 5].map((level) {
-                          return DropdownMenuItem<int>(
-                            value: level,
-                            child: Text('N$level'),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedJlptLevel = value ?? 1;
-                          });
-                        },
+              const SizedBox(height: 8),
+              // JLPT Levels header
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/icons/award.png',
+                      width: 36,
+                      height: 36,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'JLPT Levels',
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: _performSearch,
-                        child: const Text('Search'),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
+              // JLPT Level Selector
+              BlocBuilder<KanjiBloc, KanjiState>(
+                builder: (context, state) {
+                  return JlptLevelSelector(
+                    selectedLevel: state.jlptLevel,
+                    onLevelSelected: (level) {
+                      context.read<KanjiBloc>().add(
+                        LoadInitialKanjiByJlptLevel(level)
+                      );
+                      setState(() => _searchByJlpt = true);
+                    },
+                  );
+                },
+              ),
               const SizedBox(height: 16),
               Expanded(
                 child: BlocBuilder<KanjiBloc, KanjiState>(
@@ -185,7 +199,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
-              'Loaded ${state.kanjiList.length} kanji for JLPT N$_selectedJlptLevel',
+                    'Loaded ${state.kanjiList.length} kanji for JLPT N${state.jlptLevel}',
               style: const TextStyle(
                 fontStyle: FontStyle.italic,
                 color: AppColors.primary,
@@ -201,9 +215,11 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               final kanji = state.currentPageKanji[index];
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
+                elevation: 5,
+                shadowColor: Colors.black.withOpacity(0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
-                  side: const BorderSide(color: AppColors.primary, width: 2),
+                  side: const BorderSide(color: AppColors.primary, width: 3),
                 ),
                 child: InkWell(
                   onTap: () {
@@ -327,7 +343,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Loading all kanji for JLPT N$_selectedJlptLevel...',
+                'Loading all kanji for JLPT N${state.jlptLevel}...',
                 style: const TextStyle(fontStyle: FontStyle.italic),
               ),
             ],
@@ -342,9 +358,11 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               final kanji = state.currentPageKanji[index];
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
+                elevation: 5,
+                shadowColor: Colors.black.withOpacity(0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
-                  side: const BorderSide(color: AppColors.primary, width: 2),
+                  side: const BorderSide(color: AppColors.primary, width: 3),
                 ),
                 child: InkWell(
                   onTap: () {

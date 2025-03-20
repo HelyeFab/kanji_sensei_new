@@ -9,6 +9,8 @@
 .history
 .svn/
 migrate_working_dir/
+Keyra/
+
 
 # IntelliJ related
 *.iml

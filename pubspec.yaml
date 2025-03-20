@@ -74,6 +74,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/icons/
     - lib/assets/kanji_data/jlpt_1/
     - lib/assets/kanji_data/jlpt_1_1/
     - lib/assets/kanji_data/jlpt_1_2/
