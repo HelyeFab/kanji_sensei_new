@@ -10,10 +10,10 @@ import '../../data/repositories/user_stats_repository.dart';
 import '../../data/repositories/word_lists_repository.dart';
 import '../../domain/repositories/kanji_repository.dart';
 import '../../domain/services/spaced_repetition_service.dart';
-import '../../core/auth/auth_service.dart';
+import '../../features/auth/data/repositories/firebase_auth_repository.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../presentation/blocs/kanji/kanji_bloc.dart';
 import '../../presentation/blocs/kanji/dictionary_search_bloc.dart';
-import '../../presentation/blocs/auth/auth_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -39,10 +39,6 @@ void _registerDependencies() {
   getIt.registerLazySingleton<KanjiApiService>(() => KanjiApiService());
   getIt.registerLazySingleton<KanjiLocalDataService>(
       () => KanjiLocalDataService());
-  getIt.registerLazySingleton<AuthService>(() => AuthService(
-        firebaseAuth: getIt<FirebaseAuth>(),
-        googleSignIn: getIt<GoogleSignIn>(),
-      ));
   getIt.registerLazySingleton<SpacedRepetitionService>(
       () => SpacedRepetitionService());
 
@@ -55,11 +51,15 @@ void _registerDependencies() {
       () => SavedWordsRepository());
   getIt.registerLazySingleton<UserStatsRepository>(() => UserStatsRepository());
   getIt.registerLazySingleton<WordListsRepository>(() => WordListsRepository());
+  getIt.registerLazySingleton<FirebaseAuthRepository>(() => FirebaseAuthRepository(
+        firebaseAuth: getIt<FirebaseAuth>(),
+        googleSignIn: getIt<GoogleSignIn>(),
+      ));
 
   // Register Blocs
   getIt.registerFactory<KanjiBloc>(() => KanjiBloc(getIt<KanjiRepository>()));
   getIt.registerLazySingleton<DictionarySearchBloc>(
       () => DictionarySearchBloc(getIt<KanjiRepository>()));
   getIt.registerFactory<AuthBloc>(
-      () => AuthBloc(authService: getIt<AuthService>()));
+      () => AuthBloc(authRepository: getIt<FirebaseAuthRepository>()));
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/kanji/kanji_bloc.dart';
 import '../blocs/kanji/kanji_event.dart';
 import '../blocs/kanji/kanji_state.dart';
-import '../../domain/entities/kanji.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/kanji_search_bar.dart';

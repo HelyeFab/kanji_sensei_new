@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/kanji.dart';
 import '../theme/app_colors.dart';
-import '../blocs/kanji/kanji_bloc.dart';
-import '../blocs/kanji/kanji_event.dart';
+import '../widgets/save_word_modal.dart';
 
 class KanjiDetailCard extends StatelessWidget {
   final Kanji kanji;
@@ -41,6 +39,7 @@ class KanjiDetailCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // Close button (right side)
                   Positioned(
                     top: 0,
                     right: 0,
@@ -65,6 +64,22 @@ class KanjiDetailCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // Save to list button (left side)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.bookmark_border,
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
+                      onPressed: () {
+                        _showSaveToListModal(context);
+                      },
+                      tooltip: 'Save to word list',
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -84,6 +99,25 @@ class KanjiDetailCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Convert Kanji to a format that can be saved to a word list
+  Map<String, dynamic> _kanjiToWordDetails() {
+    return {
+      'word': kanji.character,
+      'translation': kanji.meanings.join(', '),
+      'example': kanji.onReadings.isNotEmpty ? 'On: ${kanji.onReadings.join(', ')}' : null,
+    };
+  }
+  
+  // Show modal to save kanji to a word list
+  void _showSaveToListModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => SaveWordModal(
+        wordDetails: _kanjiToWordDetails(),
       ),
     );
   }

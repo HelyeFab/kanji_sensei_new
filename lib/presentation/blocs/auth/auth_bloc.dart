@@ -112,10 +112,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     try {
-      await _authService.signOut();
+      // Cancel the auth state subscription first to prevent any unexpected state changes
+      await _authStateSubscription?.cancel();
+      
+      // Sign out with a timeout to prevent hanging
+      bool signOutCompleted = false;
+      
+      try {
+        await _authService.signOut();
+        signOutCompleted = true;
+      } catch (e) {
+        print('Error during sign out: $e');
+        // Continue with the logout flow even if there's an error
+      }
+      
+      // Always emit Unauthenticated state after sign-out attempt
       emit(const Unauthenticated());
+      
+      // If sign out was successful, restart auth listening
+      if (signOutCompleted) {
+        // Delay slightly to ensure Firebase has time to process the logout
+        await Future.delayed(const Duration(milliseconds: 500));
+        add(const StartAuthListening());
+      }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      print('Critical error during sign out: $e');
+      // Even if there's an error, we still want to transition to Unauthenticated
+      // to prevent the UI from being stuck in the loading state
+      emit(const Unauthenticated());
+      
+      // Restart auth listening in case of error
+      add(const StartAuthListening());
     }
   }
 

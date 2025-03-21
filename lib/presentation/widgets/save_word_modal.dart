@@ -196,8 +196,8 @@ class _SaveWordModalState extends State<SaveWordModal> {
               ),
               if (_isCreatingNewList)
                 TextButton(
-                  child: const Text('Create & Save'),
                   onPressed: _createNewList,
+                  child: const Text('Create & Save'),
                 )
               else
                 TextButton(
@@ -210,8 +210,8 @@ class _SaveWordModalState extends State<SaveWordModal> {
                 ),
               if (!_isCreatingNewList)
                 TextButton(
-                  child: const Text('Save'),
                   onPressed: _saveToExistingList,
+                  child: const Text('Save'),
                 ),
             ],
     );

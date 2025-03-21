@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../blocs/auth/auth_bloc.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../data/repositories/user_stats_repository.dart';
 import '../../domain/entities/user_stats.dart';
 
@@ -12,11 +12,12 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        return state is Authenticated
-            ? _buildProfileContent(context)
-            : const Center(
-                child: CircularProgressIndicator(),
-              );
+        return state.maybeWhen(
+          authenticated: (_) => _buildProfileContent(context),
+          orElse: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
       },
     );
   }
@@ -25,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       // If we're authenticated but have no user, something went wrong
-      context.read<AuthBloc>().add(const SignOutRequested());
+      context.read<AuthBloc>().add(AuthEvent.signOutRequested());
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -271,7 +272,7 @@ class ProfileScreen extends StatelessWidget {
     );
 
     if (shouldLogout == true) {
-      context.read<AuthBloc>().add(const SignOutRequested());
+      context.read<AuthBloc>().add(AuthEvent.signOutRequested());
     }
   }
 }

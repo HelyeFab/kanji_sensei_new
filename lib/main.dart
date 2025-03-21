@@ -11,14 +11,13 @@ import 'data/repositories/saved_words_repository.dart';
 import 'data/repositories/user_stats_repository.dart';
 import 'data/repositories/word_lists_repository.dart';
 import 'presentation/blocs/kanji/kanji_bloc.dart';
-import 'presentation/blocs/auth/auth_bloc.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/pages/auth_page.dart';
 import 'presentation/screens/kanji_search_screen.dart';
 import 'presentation/screens/profile_screen.dart';
-import 'presentation/screens/auth_screen.dart';
 import 'presentation/theme/app_theme.dart';
 
 import 'package:kanji_sensei/presentation/screens/dictionary_screen.dart';
-import 'presentation/screens/word_collection_screen.dart';
 import 'presentation/screens/word_lists_screen.dart';
 
 void main() async {
@@ -65,17 +64,21 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is Authenticated) {
-              return const MainApp();
-            } else if (state is AuthLoading) {
-              return const Scaffold(
+            return state.when(
+              initial: () => const Scaffold(
                 body: Center(
                   child: CircularProgressIndicator(),
                 ),
-              );
-            } else {
-              return const AuthScreen();
-            }
+              ),
+              loading: () => const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              authenticated: (_) => const MainApp(),
+              unauthenticated: () => const AuthPage(),
+              error: (_) => const AuthPage(),
+            );
           },
         ),
       ),

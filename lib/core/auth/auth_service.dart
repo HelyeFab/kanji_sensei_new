@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -77,9 +78,34 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     try {
-      await _googleSignIn.signOut();
+      // First, ensure we're disconnected from Firestore
+      // This helps prevent issues with lingering listeners
+      await FirebaseFirestore.instance.terminate();
+      await FirebaseFirestore.instance.clearPersistence();
+      
+      // Try to sign out from Google with a timeout
+      try {
+        await Future.any([
+          _googleSignIn.signOut(),
+          Future.delayed(const Duration(seconds: 2))
+        ]);
+      } catch (googleError) {
+        // Log but continue if Google sign out fails or times out
+        print('Google sign out error: $googleError');
+      }
+      
+      // Always sign out from Firebase
       await _firebaseAuth.signOut();
+      
+      // Reinitialize Firestore after logout
+      await FirebaseFirestore.instance.enableNetwork();
     } catch (e) {
+      // Even if there's an error, try to re-enable Firestore
+      try {
+        await FirebaseFirestore.instance.enableNetwork();
+      } catch (_) {
+        // Ignore any errors here
+      }
       throw Exception('Failed to sign out: $e');
     }
   }
