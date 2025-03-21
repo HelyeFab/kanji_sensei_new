@@ -25,49 +25,39 @@ void configureDependencies() {
 void _registerDependencies() {
   // Register Firebase instances
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
-  
+
   // Register Services
   getIt.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn(
-    clientId: '93869706966-lrg3q8emmf22d0t83hmno57ilaggcsoj.apps.googleusercontent.com',
-    scopes: [
-      'email',
-      'profile',
-    ],
-  ));
+        clientId:
+            '93869706966-lrg3q8emmf22d0t83hmno57ilaggcsoj.apps.googleusercontent.com',
+        scopes: [
+          'email',
+          'profile',
+        ],
+      ));
   getIt.registerLazySingleton<KanjiApiService>(() => KanjiApiService());
-  getIt.registerLazySingleton<KanjiLocalDataService>(() => KanjiLocalDataService());
-  getIt.registerLazySingleton<AuthService>(
-    () => AuthService(
-      firebaseAuth: getIt<FirebaseAuth>(),
-      googleSignIn: getIt<GoogleSignIn>(),
-    )
-  );
+  getIt.registerLazySingleton<KanjiLocalDataService>(
+      () => KanjiLocalDataService());
+  getIt.registerLazySingleton<AuthService>(() => AuthService(
+        firebaseAuth: getIt<FirebaseAuth>(),
+        googleSignIn: getIt<GoogleSignIn>(),
+      ));
   getIt.registerLazySingleton<SpacedRepetitionService>(
-    () => SpacedRepetitionService()
-  );
-  
+      () => SpacedRepetitionService());
+
   // Register Repositories
-  getIt.registerLazySingleton<KanjiRepository>(
-    () => KanjiRepositoryImpl(
-      getIt<KanjiApiService>(),
-      getIt<KanjiLocalDataService>(),
-    )
-  );
+  getIt.registerLazySingleton<KanjiRepository>(() => KanjiRepositoryImpl(
+        getIt<KanjiApiService>(),
+        getIt<KanjiLocalDataService>(),
+      ));
   getIt.registerLazySingleton<SavedWordsRepository>(
-    () => SavedWordsRepository()
-  );
-  getIt.registerLazySingleton<UserStatsRepository>(
-    () => UserStatsRepository()
-  );
-  
+      () => SavedWordsRepository());
+  getIt.registerLazySingleton<UserStatsRepository>(() => UserStatsRepository());
+
   // Register Blocs
-  getIt.registerFactory<KanjiBloc>(
-    () => KanjiBloc(getIt<KanjiRepository>())
-  );
+  getIt.registerFactory<KanjiBloc>(() => KanjiBloc(getIt<KanjiRepository>()));
   getIt.registerLazySingleton<DictionarySearchBloc>(
-    () => DictionarySearchBloc(getIt<KanjiRepository>())
-  );
+      () => DictionarySearchBloc(getIt<KanjiRepository>()));
   getIt.registerFactory<AuthBloc>(
-    () => AuthBloc(authService: getIt<AuthService>())
-  );
+      () => AuthBloc(authService: getIt<AuthService>()));
 }

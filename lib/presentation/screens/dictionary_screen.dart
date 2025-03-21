@@ -81,6 +81,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                         itemBuilder: (context, index) {
                           final result = state.results[index];
                           return DictionaryCard(
+                            result: result,
                             word: result['word'] ?? '',
                             partOfSpeech: result['partOfSpeech'] ?? '',
                             translation: result['translation'] ?? '',

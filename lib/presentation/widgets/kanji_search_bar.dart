@@ -23,7 +23,7 @@ class KanjiSearchBar extends StatelessWidget {
       height: 48,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.lightGray, // Matcha background
+        color: AppColors.lightGray, //  background
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.primary, width: 3),
       ),
