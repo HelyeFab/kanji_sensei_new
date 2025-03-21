@@ -31,6 +31,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     on<ChangePage>(_onChangePage);
     on<SelectKanji>(_onSelectKanji);
     on<ClearError>(_onClearError);
+    on<ClearSelectedKanji>(_onClearSelectedKanji);
     on<_UpdateKanjiList>(_onUpdateKanjiList);
   }
   
@@ -236,5 +237,21 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       status: KanjiStatus.initial,
       errorMessage: null,
     ));
+  }
+
+  void _onClearSelectedKanji(
+    ClearSelectedKanji event,
+    Emitter<KanjiState> emit,
+  ) {
+    print('_onClearSelectedKanji called');
+    print('Current selectedKanji: ${state.selectedKanji}');
+    
+    final newState = state.copyWith(
+      selectedKanji: null,
+    );
+    
+    print('New selectedKanji: ${newState.selectedKanji}');
+    emit(newState);
+    print('State emitted with null selectedKanji');
   }
 }

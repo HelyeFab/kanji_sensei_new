@@ -8,6 +8,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/kanji_search_bar.dart';
 import '../widgets/jlpt_level_selector.dart';
+import '../widgets/kanji_detail_card.dart';
 
 class KanjiSearchScreen extends StatefulWidget {
   const KanjiSearchScreen({super.key});
@@ -30,9 +31,9 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
     if (_searchByJlpt) {
       final currentJlptLevel = context.read<KanjiBloc>().state.jlptLevel;
       if (currentJlptLevel > 0) {
-        context.read<KanjiBloc>().add(
-          LoadInitialKanjiByJlptLevel(currentJlptLevel)
-        );
+        context
+            .read<KanjiBloc>()
+            .add(LoadInitialKanjiByJlptLevel(currentJlptLevel));
       }
     } else {
       if (_searchController.text.isEmpty) return;
@@ -53,6 +54,21 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
       }
     }
   }
+  
+  // Direct method to clear selected kanji
+  void _clearSelectedKanji() {
+    print('_clearSelectedKanji called directly');
+    // Use a direct approach to clear the selected kanji
+    final kanjiBloc = context.read<KanjiBloc>();
+    
+    // First try with the event
+    kanjiBloc.add(ClearSelectedKanji());
+    
+    // Also try with a direct SelectKanji(null) event as a fallback
+    kanjiBloc.add(SelectKanji(null));
+    
+    print('Both ClearSelectedKanji and SelectKanji(null) events dispatched');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +79,10 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
         backgroundColor: AppColors.background,
       ),
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          // Tap dismissal removed as requested
+        },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -89,7 +108,8 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                   Expanded(child: Divider()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('OR', style: TextStyle(color: AppColors.textSecondary)),
+                    child: Text('OR',
+                        style: TextStyle(color: AppColors.textSecondary)),
                   ),
                   Expanded(child: Divider()),
                 ],
@@ -123,9 +143,9 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                   return JlptLevelSelector(
                     selectedLevel: state.jlptLevel,
                     onLevelSelected: (level) {
-                      context.read<KanjiBloc>().add(
-                        LoadInitialKanjiByJlptLevel(level)
-                      );
+                      context
+                          .read<KanjiBloc>()
+                          .add(LoadInitialKanjiByJlptLevel(level));
                       setState(() => _searchByJlpt = true);
                     },
                   );
@@ -135,12 +155,17 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
               Expanded(
                 child: BlocBuilder<KanjiBloc, KanjiState>(
                   builder: (context, state) {
+                    print('BlocBuilder rebuilding with state: ${state.status}, selectedKanji: ${state.selectedKanji != null}');
+                    
                     if (state.status == KanjiStatus.loading) {
+                      print('Showing loading indicator');
                       return const Center(child: CircularProgressIndicator());
                     } else if (state.status == KanjiStatus.loadingMore) {
+                      print('Showing loading more UI');
                       // Show results with a loading indicator for background loading
                       return _buildKanjiListWithLoading(state);
                     } else if (state.status == KanjiStatus.error) {
+                      print('Showing error UI');
                       return const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -170,10 +195,16 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                         ),
                       );
                     } else if (state.selectedKanji != null) {
-                      return _buildKanjiDetails(state.selectedKanji!);
+                      print('Showing kanji detail card for: ${state.selectedKanji!.character}');
+                      return KanjiDetailCard(
+                        kanji: state.selectedKanji!,
+                        onClose: _clearSelectedKanji,
+                      );
                     } else if (state.kanjiList.isNotEmpty) {
+                      print('Showing paginated kanji list with ${state.kanjiList.length} items');
                       return _buildPaginatedKanjiList(state);
                     } else {
+                      print('Showing empty state message');
                       return Center(
                         child: Text(_searchByJlpt
                             ? 'Select a JLPT level and press Search'
@@ -199,7 +230,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
-                    'Loaded ${state.kanjiList.length} kanji for JLPT N${state.jlptLevel}',
+              'Loaded ${state.kanjiList.length} kanji for JLPT N${state.jlptLevel}',
               style: const TextStyle(
                 fontStyle: FontStyle.italic,
                 color: AppColors.primary,
@@ -253,7 +284,8 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        if (kanji.onReadings.isNotEmpty || kanji.kunReadings.isNotEmpty)
+                        if (kanji.onReadings.isNotEmpty ||
+                            kanji.kunReadings.isNotEmpty)
                           Text(
                             'Example sentence would go here.',
                             style: const TextStyle(
@@ -418,77 +450,6 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildKanjiDetails(Kanji kanji) {
-    return SingleChildScrollView(
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppColors.primary, width: 2),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  kanji.character,
-                  style: const TextStyle(
-                    fontSize: 72,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              _buildDetailSection('Meanings', kanji.meanings.join(', ')),
-              _buildDetailSection('On Readings', kanji.onReadings.join(', ')),
-              _buildDetailSection('Kun Readings', kanji.kunReadings.join(', ')),
-              _buildDetailSection('Stroke Count', kanji.strokeCount.toString()),
-              _buildDetailSection('JLPT Level', 'N${kanji.jlptLevel}'),
-              if (kanji.grade != null)
-                _buildDetailSection('Grade', kanji.grade.toString()),
-              if (kanji.heisigEn != null)
-                _buildDetailSection('Heisig Keyword', kanji.heisigEn!),
-              if (kanji.nameReadings.isNotEmpty)
-                _buildDetailSection('Name Readings', kanji.nameReadings.join(', ')),
-              if (kanji.notes.isNotEmpty)
-                _buildDetailSection('Notes', kanji.notes.join('\n')),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailSection(String title, String content) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            content,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

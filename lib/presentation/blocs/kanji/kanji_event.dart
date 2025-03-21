@@ -77,3 +77,5 @@ class SelectKanji extends KanjiEvent {
 }
 
 class ClearError extends KanjiEvent {}
+
+class ClearSelectedKanji extends KanjiEvent {}
