@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../widgets/save_word_modal.dart'; // Import SaveWordModal
 
 class WordDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> wordDetails;
@@ -11,8 +12,22 @@ class WordDetailsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
-        backgroundColor: AppColors.background, // Keep AppBar background pink
+        backgroundColor: AppColors.primary, // Correct AppBar background to primary color
+        foregroundColor: AppColors.lightGray, // Set foreground color to lightGray for back button and title
         title: Text(wordDetails['word'] ?? 'Word Details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save, color: AppColors.lightGray), // Set icon color to lightGray
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SaveWordModal(wordDetails: wordDetails);
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
