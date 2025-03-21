@@ -203,9 +203,13 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     SelectKanji event,
     Emitter<KanjiState> emit,
   ) async {
+    if (event.kanji == null) {
+      emit(state.copyWith(selectedKanji: null));
+      return;
+    }
     emit(state.copyWith(status: KanjiStatus.loading));
     try {
-      final result = await _repository.getKanjiDetails(event.kanji);
+      final result = await _repository.getKanjiDetails(event.kanji!);
       result.fold(
         (failure) => emit(state.copyWith(
           status: KanjiStatus.error,

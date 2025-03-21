@@ -68,7 +68,7 @@ class ChangePage extends KanjiEvent {
 }
 
 class SelectKanji extends KanjiEvent {
-  final String kanji;
+  final String? kanji;
 
   const SelectKanji(this.kanji);
 
