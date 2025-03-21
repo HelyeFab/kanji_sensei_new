@@ -1,137 +1,95 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:dartz/dartz.dart';
-
-class AuthFailure {
-  final String code;
-  final String message;
-
-  AuthFailure({required this.code, required this.message});
-}
 
 class AuthService {
-  final FirebaseAuth firebaseAuth;
+  final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
   AuthService({
-    required this.firebaseAuth,
+    FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
-  }) : _googleSignIn = googleSignIn ?? GoogleSignIn();
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
 
-  User? get currentUser => firebaseAuth.currentUser;
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Stream<User?> authStateChanges() => firebaseAuth.authStateChanges();
+  User? get currentUser => _firebaseAuth.currentUser;
 
-  Future<Either<AuthFailure, UserCredential>> signIn(
-    String email,
-    String password,
-  ) async {
+  bool get isAuthenticated => _firebaseAuth.currentUser != null;
+
+  // Sign in anonymously for testing purposes
+  Future<UserCredential> signInAnonymously() async {
     try {
-      final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+      return await _firebaseAuth.signInAnonymously();
+    } catch (e) {
+      throw Exception('Failed to sign in anonymously: $e');
+    }
+  }
+
+  // Sign in with email and password
+  Future<UserCredential> signInWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      return await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return Right(userCredential);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailure(
-        code: e.code,
-        message: e.message ?? 'Authentication failed',
-      ));
+    } catch (e) {
+      throw Exception('Failed to sign in with email and password: $e');
     }
   }
 
-  Future<Either<AuthFailure, UserCredential>> signUp(
-    String email,
-    String password,
-  ) async {
+  // Sign up with email and password
+  Future<UserCredential> createUserWithEmailAndPassword(
+      String email, String password) async {
     try {
-      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+      return await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return Right(userCredential);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailure(
-        code: e.code,
-        message: e.message ?? 'Registration failed',
-      ));
+    } catch (e) {
+      throw Exception('Failed to create user with email and password: $e');
     }
   }
 
-  Future<Either<AuthFailure, void>> signOut() async {
-    return signOutGoogle();
-  }
-
-  Future<Either<AuthFailure, void>> resetPassword(String email) async {
+  // Sign in with Google
+  Future<UserCredential> signInWithGoogle() async {
     try {
-      await firebaseAuth.sendPasswordResetEmail(email: email);
-      return const Right(null);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailure(
-        code: e.code,
-        message: e.message ?? 'Password reset failed',
-      ));
-    }
-  }
-
-  Future<Either<AuthFailure, UserCredential>> signInWithGoogle() async {
-    try {
-      print('Starting Google Sign In...');
-      
-      // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
-      // If sign in was aborted
       if (googleUser == null) {
-        print('Sign in aborted by user');
-        return Left(AuthFailure(
-          code: 'sign-in-cancelled',
-          message: 'Google sign in was cancelled by the user',
-        ));
+        throw Exception('Google sign in aborted by user');
       }
 
-      print('Google Sign In successful for user: ${googleUser.email}');
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      print('Obtained Google authentication');
-      print('Access Token available: ${googleAuth.accessToken != null}');
-      print('ID Token available: ${googleAuth.idToken != null}');
-
-      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      print('Created Firebase credential');
 
-      // Once signed in, return the UserCredential
-      print('Signing in to Firebase...');
-      final userCredential = await firebaseAuth.signInWithCredential(credential);
-      print('Successfully signed in with Google. UID: ${userCredential.user?.uid}');
-      
-      return Right(userCredential);
+      return await _firebaseAuth.signInWithCredential(credential);
     } catch (e) {
-      print('Failed to sign in with Google: ${e.toString()}');
-      return Left(AuthFailure(
-        code: 'google-sign-in-failed',
-        message: 'Failed to sign in with Google: ${e.toString()}',
-      ));
+      throw Exception('Failed to sign in with Google: $e');
     }
   }
 
-  Future<Either<AuthFailure, void>> signOutGoogle() async {
+  // Sign out
+  Future<void> signOut() async {
     try {
-      await Future.wait([
-        firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
-      return const Right(null);
+      await _googleSignIn.signOut();
+      await _firebaseAuth.signOut();
     } catch (e) {
-      return Left(AuthFailure(
-        code: 'sign-out-failed',
-        message: 'Failed to sign out: ${e.toString()}',
-      ));
+      throw Exception('Failed to sign out: $e');
+    }
+  }
+
+  // Reset password
+  Future<void> resetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw Exception('Failed to send password reset email: $e');
     }
   }
 }

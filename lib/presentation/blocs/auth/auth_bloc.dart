@@ -22,6 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
     on<SignOutRequested>(_onSignOutRequested);
     on<PasswordResetRequested>(_onPasswordResetRequested);
+    on<AnonymousSignInRequested>(_onAnonymousSignInRequested);
   }
 
   void _onStartAuthListening(
@@ -29,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) {
     _authStateSubscription?.cancel();
-    _authStateSubscription = _authService.authStateChanges().listen(
+    _authStateSubscription = _authService.authStateChanges.listen(
           (user) => add(AuthStateChanged(user)),
         );
   }
@@ -50,14 +51,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _authService.signIn(
-      event.email,
-      event.password,
-    );
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (userCredential) => emit(Authenticated(userCredential.user!.uid)),
-    );
+    try {
+      final userCredential = await _authService.signInWithEmailAndPassword(
+        event.email,
+        event.password,
+      );
+      emit(Authenticated(userCredential.user!.uid));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   void _onEmailSignUpRequested(
@@ -65,18 +67,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _authService.signUp(
-      event.email,
-      event.password,
-    );
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (userCredential) {
-        // Update user profile with name
-        userCredential.user?.updateDisplayName(event.name);
-        emit(Authenticated(userCredential.user!.uid));
-      },
-    );
+    try {
+      final userCredential = await _authService.createUserWithEmailAndPassword(
+        event.email,
+        event.password,
+      );
+      // Update user profile with name
+      await userCredential.user?.updateDisplayName(event.name);
+      emit(Authenticated(userCredential.user!.uid));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   void _onGoogleSignInRequested(
@@ -84,11 +85,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _authService.signInWithGoogle();
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (userCredential) => emit(Authenticated(userCredential.user!.uid)),
-    );
+    try {
+      final userCredential = await _authService.signInWithGoogle();
+      emit(Authenticated(userCredential.user!.uid));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  void _onAnonymousSignInRequested(
+    AnonymousSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final userCredential = await _authService.signInAnonymously();
+      emit(Authenticated(userCredential.user!.uid));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   void _onSignOutRequested(
@@ -96,11 +111,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _authService.signOutGoogle();
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(const Unauthenticated()),
-    );
+    try {
+      await _authService.signOut();
+      emit(const Unauthenticated());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   void _onPasswordResetRequested(
@@ -108,11 +124,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    final result = await _authService.resetPassword(event.email);
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(const Unauthenticated()),
-    );
+    try {
+      await _authService.resetPassword(event.email);
+      emit(const PasswordResetSent());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   @override

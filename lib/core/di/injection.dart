@@ -7,6 +7,7 @@ import '../../data/api/kanji_local_data_service.dart';
 import '../../data/repositories/kanji_repository_impl.dart';
 import '../../data/repositories/saved_words_repository.dart';
 import '../../data/repositories/user_stats_repository.dart';
+import '../../data/repositories/word_lists_repository.dart';
 import '../../domain/repositories/kanji_repository.dart';
 import '../../domain/services/spaced_repetition_service.dart';
 import '../../core/auth/auth_service.dart';
@@ -53,6 +54,7 @@ void _registerDependencies() {
   getIt.registerLazySingleton<SavedWordsRepository>(
       () => SavedWordsRepository());
   getIt.registerLazySingleton<UserStatsRepository>(() => UserStatsRepository());
+  getIt.registerLazySingleton<WordListsRepository>(() => WordListsRepository());
 
   // Register Blocs
   getIt.registerFactory<KanjiBloc>(() => KanjiBloc(getIt<KanjiRepository>()));

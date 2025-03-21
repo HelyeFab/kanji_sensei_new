@@ -51,6 +51,17 @@ class SavedWordsRepository {
       final userRef = _firestore.collection('users').doc(user.uid);
       final wordsRef = userRef.collection('saved_words');
 
+      // First, ensure the user document exists
+      final userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        // Create the user document if it doesn't exist
+        batch.set(userRef, {
+          'createdAt': FieldValue.serverTimestamp(),
+          'savedWords': 0,
+          'lastUpdated': FieldValue.serverTimestamp(),
+        });
+      }
+
       // Add the word
       batch.set(wordsRef.doc(word.id), word.toFirestore());
 

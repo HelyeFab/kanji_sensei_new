@@ -52,6 +52,10 @@ class GoogleSignInRequested extends AuthEvent {
   const GoogleSignInRequested();
 }
 
+class AnonymousSignInRequested extends AuthEvent {
+  const AnonymousSignInRequested();
+}
+
 class SignOutRequested extends AuthEvent {
   const SignOutRequested();
 }

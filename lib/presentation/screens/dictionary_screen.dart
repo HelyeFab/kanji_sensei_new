@@ -5,6 +5,7 @@ import '../blocs/kanji/dictionary_search_bloc.dart';
 import '../theme/app_colors.dart';
 import '../widgets/kanji_search_bar.dart';
 import '../widgets/dictionary_card.dart';
+import '../screens/word_lists_screen.dart';
 
 class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({super.key});
@@ -38,6 +39,20 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
         appBar: AppBar(
           title: const Text('Dictionary'),
           backgroundColor: AppColors.background,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WordListsScreen(),
+                  ),
+                );
+              },
+              tooltip: 'My Word Lists',
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -52,7 +67,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                   onSearch: _performSearch,
                 ),
               ),
-              
+
               // Results
               Expanded(
                 child: BlocBuilder<DictionarySearchBloc, DictionarySearchState>(
@@ -75,7 +90,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                           child: Text('No results found'),
                         );
                       }
-                      
+
                       return ListView.builder(
                         itemCount: state.results.length,
                         itemBuilder: (context, index) {
@@ -90,7 +105,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                         },
                       );
                     }
-                    
+
                     // Default case - should not happen
                     return const SizedBox.shrink();
                   },

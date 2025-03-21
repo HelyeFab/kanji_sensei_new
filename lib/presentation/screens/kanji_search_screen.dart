@@ -8,6 +8,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/kanji_search_bar.dart';
 import '../widgets/jlpt_level_selector.dart';
+import '../widgets/save_word_modal.dart';
 
 class KanjiSearchScreen extends StatefulWidget {
   const KanjiSearchScreen({super.key});
@@ -233,6 +234,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               kanji.character,
@@ -241,6 +243,26 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.save, color: AppColors.primary),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SaveWordModal(
+                                      wordDetails: {
+                                        'word': kanji.character,
+                                        'partOfSpeech': 'Kanji',
+                                        'translation': kanji.meanings.join(', '),
+                                        'example': kanji.onReadings.isNotEmpty 
+                                            ? 'On: ${kanji.onReadings.join(", ")}' 
+                                            : '',
+                                      },
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -360,6 +382,7 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               kanji.character,
@@ -368,6 +391,26 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.textPrimary,
                               ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.save, color: AppColors.primary),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SaveWordModal(
+                                      wordDetails: {
+                                        'word': kanji.character,
+                                        'partOfSpeech': 'Kanji',
+                                        'translation': kanji.meanings.join(', '),
+                                        'example': kanji.onReadings.isNotEmpty 
+                                            ? 'On: ${kanji.onReadings.join(", ")}' 
+                                            : '',
+                                      },
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -434,15 +477,37 @@ class _KanjiSearchScreenState extends State<KanjiSearchScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Text(
-                  kanji.character,
-                  style: const TextStyle(
-                    fontSize: 72,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    kanji.character,
+                    style: const TextStyle(
+                      fontSize: 72,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    icon: const Icon(Icons.save, color: AppColors.primary, size: 32),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return SaveWordModal(
+                            wordDetails: {
+                              'word': kanji.character,
+                              'partOfSpeech': 'Kanji',
+                              'translation': kanji.meanings.join(', '),
+                              'example': 'On: ${kanji.onReadings.join(", ")}\nKun: ${kanji.kunReadings.join(", ")}',
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               _buildDetailSection('Meanings', kanji.meanings.join(', ')),

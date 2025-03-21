@@ -9,6 +9,7 @@ import 'core/di/injection.dart';
 import 'core/constants/app_config.dart';
 import 'data/repositories/saved_words_repository.dart';
 import 'data/repositories/user_stats_repository.dart';
+import 'data/repositories/word_lists_repository.dart';
 import 'presentation/blocs/kanji/kanji_bloc.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'presentation/screens/kanji_search_screen.dart';
@@ -18,6 +19,7 @@ import 'presentation/theme/app_theme.dart';
 
 import 'package:kanji_sensei/presentation/screens/dictionary_screen.dart';
 import 'presentation/screens/word_collection_screen.dart';
+import 'presentation/screens/word_lists_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,7 +95,7 @@ class _MainAppState extends State<MainApp> {
   
   static final List<Widget> _screens = [
     const DictionaryScreen(),
-    const WordCollectionScreen(),
+    const WordListsScreen(),
     const KanjiSearchScreen(),
     const ProfileScreen(),
   ];
@@ -113,6 +115,9 @@ class _MainAppState extends State<MainApp> {
         ),
         Provider<UserStatsRepository>(
           create: (_) => getIt<UserStatsRepository>(),
+        ),
+        Provider<WordListsRepository>(
+          create: (_) => getIt<WordListsRepository>(),
         ),
       ],
       child: Scaffold(
