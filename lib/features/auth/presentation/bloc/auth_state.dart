@@ -36,8 +36,9 @@ abstract class AuthState {
   }) {
     if (this is _Initial && initial != null) return initial();
     if (this is _Loading && loading != null) return loading();
-    if (this is _Authenticated && authenticated != null) 
+    if (this is _Authenticated && authenticated != null) {
       return authenticated((this as _Authenticated).uid);
+    }
     if (this is _Unauthenticated && unauthenticated != null) return unauthenticated();
     if (this is _Error && error != null) return error((this as _Error).message);
     return orElse();

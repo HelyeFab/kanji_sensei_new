@@ -29,8 +29,6 @@ void _registerDependencies() {
 
   // Register Services
   getIt.registerLazySingleton<GoogleSignIn>(() => GoogleSignIn(
-        clientId:
-            '93869706966-lrg3q8emmf22d0t83hmno57ilaggcsoj.apps.googleusercontent.com',
         scopes: [
           'email',
           'profile',
