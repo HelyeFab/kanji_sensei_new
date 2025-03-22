@@ -33,6 +33,7 @@ void _registerDependencies() {
           'email',
           'profile',
         ],
+        serverClientId: '93869706966-lrg3q8emmf22d0t83hmno57ilaggcsoj.apps.googleusercontent.com',
       ));
   getIt.registerLazySingleton<KanjiApiService>(() => KanjiApiService());
   getIt.registerLazySingleton<KanjiLocalDataService>(
