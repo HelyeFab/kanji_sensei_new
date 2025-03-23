@@ -74,7 +74,8 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                   builder: (context, state) {
                     if (state is DictionarySearchInitial) {
                       return const Center(
-                        child: Text('Feels lonely here: start searching for words in Japanese or English'),
+                        child: Text('Feels lonely here: start searching for words in Japanese or English', ),
+                        
                       
                       );
                     } else if (state is DictionarySearchLoading) {
